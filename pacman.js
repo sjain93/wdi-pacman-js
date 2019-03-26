@@ -1,7 +1,7 @@
 // Setup initial game stats
 let score = 0;
 let lives = 2;
-
+let powerPellets = 4;
 
 // Define your ghosts here
   // 2, Blinky, Cyan, Speedy
@@ -57,15 +57,26 @@ function clearScreen() {
 
 function displayStats() {
   console.log(`Score: ${score}     Lives: ${lives}`);
+  console.log(`\nPower Pellets: ${powerPellets}`);
 }
 
 function displayMenu() {
   console.log('\n\nSelect Option:\n');  // each \n creates a new line
   console.log('(d) Eat Dot');
-  console.log('(1) Eat Inky');
-  console.log('(2) Eat Blinky');
-  console.log('(3) Eat Pinky');
-  console.log('(4) Eat Clyde');
+  if(powerPellets>0){
+    console.log('(p) Eat Power Pellet');}
+  else{
+    console.log("You are out of power pellets!");
+  }
+  for (var i = 0; i < ghosts.length; i++) {
+    numb = 1 + i;
+    if(ghosts[i].edible == true){
+      console.log(`(${numb}) Eat ${ghosts[i].name} (edible)`);
+    }
+    else{
+      console.log(`(${numb}) Eat ${ghosts[i].name} (inedible)`);
+    }
+  }
   console.log('(q) Quit');
 }
 
@@ -81,20 +92,32 @@ function eatDot() {
   score += 10;
 }
 
-function eatInky() {
-  console.log("Test");
+function eatGhost(ghost){
+  if(ghost.edible == false){
+    lives -=1;
+    checkLife();
+    console.log(`${ghost.name} of ${ghost.colour} colour has eaten Pac-Man!`);
+  }
+  else{
+    console.log(`${ghost.name} of ${ghost.colour} colour was eaten by Pac-Man!`);
+    score += 200;
+    ghost.edible = false;
+  }
+
 }
 
-function eatBlinky() {
-  console.log("Test");
+function checkLife(){
+  if(lives <=0){
+    process.exit();
+  }
 }
 
-function eatPinky() {
-  console.log("Test");
-}
-
-function eatClyde() {
-  console.log("Test");
+function eatPowerPellet(ghosts) {
+  score += 50;
+  for (var i = 0; i < ghosts.length; i++) {
+    ghosts[i].edible = true;
+  }
+  powerPellets -= 1;
 }
 
 // Process Player's Input
@@ -107,23 +130,29 @@ function processInput(key) {
     case 'd':
       eatDot();
       break;
+    case 'p':
+      if(powerPellets>0){
+        eatPowerPellet(ghosts);}
+      else{
+        console.log('\nInvalid Command!');
+      }
+      break;
     case '1':
-      eatInky();
+      eatGhost(ghosts[0]);
       break;
     case '2':
-      eatBlinky();
+      eatGhost(ghosts[1]);
       break;
     case '3':
-      eatPinky();
+      eatGhost(ghosts[2]);
       break;
     case '4':
-      eatClyde();
+      eatGhost(ghosts[3]);
       break;
     default:
       console.log('\nInvalid Command!');
   }
 }
-
 
 //
 // YOU PROBABLY DON'T WANT TO CHANGE CODE BELOW THIS LINE
